@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculadora de Avaliação de Veículo Usado</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background-color: #f5f7fa;
+        color: #333;
+      }
+      h1 {
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+      form {
+        background-color: #fff;
+        border: 1px solid #e0e0e0;
+        border-left: 4px solid #007bff;
+        border-radius: 10px;
+        padding: 2rem;
+        max-width: 650px;
+        margin: 2rem auto;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.06);
+      }
+      label {
+        display: block;
+        margin-top: 1rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #333;
+      }
+      input,
+      select {
+        width: 100%;
+        padding: 0.55rem;
+        margin-top: 0.4rem;
+        border: 1px solid #ccd1d9;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 0.95rem;
+        background-color: #fff;
+      }
+      button {
+        margin-top: 1.5rem;
+        padding: 0.7rem 1.5rem;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      .resultado {
+        margin-top: 2rem;
+        padding: 1rem;
+        background-color: #e9ecef;
+        border-radius: 8px;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .resultado h2 {
+        margin-top: 0;
+      }
+      .resultado ul {
+        list-style-type: none;
+        padding-left: 0;
+      }
+      .resultado li {
+        margin-bottom: 0.5rem;
+      }
+
+      /* Destaque para o valor máximo a ser pago */
+      #valorPagamento {
+        font-size: 1.4rem;
+        font-weight: bold;
+        color: #007bff;
+        margin-bottom: 1rem;
+      }
+
+      /* Estilo para card KPI: destaque elegante e centralizado */
+      .kpi-card {
+        border: 3px solid #007bff;
+        /* Subtle gradient to enhance visual appeal */
+        background: linear-gradient(135deg, #f9fbff 0%, #eef5ff 100%);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1rem auto;
+        text-align: center;
+        width: 100%;
+        box-sizing: border-box;
+        /* Professional drop shadow for depth */
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+        /* Smooth transition for hover effects */
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+      }
+
+      /* Hover effect to gently lift the KPI card */
+      .kpi-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 18px rgba(0, 123, 255, 0.25);
+      }
+      .kpi-card .kpi-label {
+        font-size: 1.1rem;
+        color: #007bff;
+        font-weight: bold;
+        margin-bottom: 0.6rem;
+      }
+      .kpi-card .kpi-value {
+        font-size: 2.3rem;
+        font-weight: bold;
+        color: #007bff;
+      }
+
+    /* Estilo menor para os centavos dentro da KPI */
+    .kpi-card .kpi-value .decimais {
+        font-size: 0.7em;
+    }
+
+      /* Estilo para boxes de detalhes separados por setor */
+      .detalhes-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        grid-gap: 1rem;
+        margin-top: 1.5rem;
+      }
+      .detalhes-box {
+        background-color: #fff;
+        border: 1px solid #e0e0e0;
+        border-top: 4px solid #007bff;
+        border-radius: 8px;
+        padding: 1rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      }
+      .detalhes-box h4 {
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+        color: #007bff;
+      }
+      .detalhes-box ul {
+        list-style-type: disc;
+        padding-left: 1rem;
+        margin-top: 0;
+      }
+      .detalhes-box li {
+        margin-bottom: 0.4rem;
+      }
+      /* Estilo para a legenda de custos fixos e impostos */
+      .legenda {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin: 1.5rem auto;
+        max-width: 800px;
+        justify-content: center;
+        font-size: 0.9rem;
+        color: #333;
+      }
+      .legenda h3 {
+        flex-basis: 100%;
+        text-align: center;
+        font-size: 1rem;
+        margin: 0 0 0.5rem 0;
+        color: #007bff;
+      }
+      .legenda details {
+        flex: 1 1 300px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #fff;
+        padding: 0.75rem 1rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      }
+      .legenda summary {
+        font-weight: bold;
+        color: #007bff;
+        cursor: pointer;
+        margin-bottom: 0.5rem;
+      }
+      .legenda ul {
+        list-style-type: disc;
+        padding-left: 1.2rem;
+        margin-top: 0;
+      }
+      .observacao {
+        font-size: 0.85rem;
+        color: #666;
+        margin-top: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Sistema de Precificação de Veículos</h1>
+    <form id="formAvaliacao">
+      <label for="valorVenda">Por quanto você acha que vende o veículo?</label>
+      <input
+        type="text"
+        id="valorVenda"
+        name="valorVenda"
+        value="0,00"
+        required
+      />
+
+      <!-- Os impostos (PIS/Confins e ICMS) são calculados automaticamente.
+           PIS/Confins corresponde a 3,65% da diferença entre o valor de venda e o valor de compra,
+           enquanto o ICMS corresponde a 0,85% do valor de venda. -->
+
+      <!-- Os custos de higienização e polimento são fixos e estão definidos no código JavaScript -->
+
+
+
+      <label for="numPneus">Quantidade de pneus a substituir:</label>
+      <select id="numPneus" name="numPneus">
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+      </select>
+
+      <label for="numLataria">Quantidade de peças de lataria a reparar:</label>
+      <select id="numLataria" name="numLataria">
+        <!-- Seleção de 0 a 15 peças de lataria -->
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        <option value="11">11</option>
+        <option value="12">12</option>
+        <option value="13">13</option>
+        <option value="14">14</option>
+        <option value="15">15</option>
+      </select>
+
+      <label for="reparosDiversos">Prévia de Manutenção:</label>
+      <input
+        type="text"
+        id="reparosDiversos"
+        name="reparosDiversos"
+        value="R$ 1.200,00"
+      />
+      <div class="observacao">
+        O valor de R$ 1.200,00 é fixo, porém o campo é editável.
+      </div>
+
+      <label for="pagarIpva">Teremos que pagar o IPVA?</label>
+      <select id="pagarIpva" name="pagarIpva">
+        <option value="nao" selected>Não</option>
+        <option value="sim">Sim</option>
+      </select>
+      <div class="observacao">
+        Se marcado "Sim", será considerado 3% do valor da Tabela Fipe como custo adicional de IPVA.
+      </div>
+
+      <label for="margem">Margem desejada (% do valor de venda):</label>
+      <input
+        type="number"
+        id="margem"
+        name="margem"
+        step="0.01"
+        min="0"
+        max="100"
+        required
+      />
+      <div class="observacao">
+        Informe a margem como porcentagem. Por exemplo, digite 15 para 15%.
+      </div>
+
+      <label for="valorFipe">Valor da Tabela Fipe:</label>
+      <input
+        type="text"
+        id="valorFipe"
+        name="valorFipe"
+        value="0,00"
+        required
+      />
+      <div class="observacao">
+        Informe o valor de referência da Tabela Fipe para este modelo de veículo.
+      </div>
+
+      <button type="submit">Calcular</button>
+    </form>
+
+    <div id="resultado" class="resultado" style="display: none">
+      <!-- Título removido conforme solicitado -->
+      <div class="kpi-card">
+        <div class="kpi-label">Valor máximo a ser pago no veículo usado</div>
+        <div class="kpi-value" id="valorPagamento"></div>
+      </div>
+      <div id="detalhesLista"></div>
+    </div>
+
+    <!-- Legenda com descrição dos custos fixos e impostos considerados -->
+
+      <script>
+      (function () {
+        // Constantes definidas nos requisitos e custos fixos adicionais
+        const CUSTO_PECA_LATARIA = 450.0;
+        const CUSTO_PNEU = 500.0;
+        // Custos fixos especificados pelo usuário
+        const CUSTO_PUBLICIDADE = 400.0;
+        const CUSTO_HIGIENIZACAO = 200.0;
+        const CUSTO_POLIMENTO = 150.0;
+        const CUSTO_TRANSFERENCIA = 190.0;
+        const CUSTO_REVISAO_PATIO = 75.0;
+        const CUSTO_LAVAGEM = 29.5;
+        const CUSTO_ABRACAF = 137.98;
+        const CUSTO_CARTORIO = 23.0;
+        const PERCENTUAL_COMISSAO = 0.005; // 0,5%
+        const PERCENTUAL_ENCARGOS_COMISSAO = 0.005; // 0,5% de encargos de comissão/DSR
+        const PERCENTUAL_JURO_FLOOR = 0.015; // 1,5%
+
+        // Percentuais de impostos
+        // PIS/Confins incide sobre a diferença entre valor de venda e de compra
+        const PIS_COFINS_PERCENT = 0.0365; // 3,65%
+        const ICMS_PERCENT = 0.0085; // 0,85% sobre o valor de venda
+
+        // Função para formatar moeda em Real Brasileiro
+        function formatarMoeda(valor) {
+          return valor.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+            minimumFractionDigits: 2,
+          });
+        }
+
+        // Converte uma string com formato de moeda brasileira para número decimal
+        function parseMoedaTexto(texto) {
+          if (!texto) return 0;
+          // Remove espaços, símbolo de moeda e pontos de milhar, depois troca vírgula por ponto
+          const soNumeros = texto
+            .replace(/\s/g, "")
+            .replace("R$", "")
+            .replace(/\./g, "")
+            .replace(",", ".");
+          const valor = parseFloat(soNumeros);
+          return isNaN(valor) ? 0 : valor;
+        }
+
+        // Formata o valor de um input como moeda brasileira
+        function formatarInputMoeda(input) {
+          const valor = parseMoedaTexto(input.value);
+          input.value = valor.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+            minimumFractionDigits: 2,
+          });
+        }
+
+        // Limpa o campo se o valor atual for zero ao receber foco, para facilitar a digitação
+        function limparSeZero(event) {
+          const input = event.target;
+          const valorNumerico = parseMoedaTexto(input.value);
+          if (valorNumerico === 0) {
+            input.value = "";
+          }
+        }
+
+        // Função que calcula o valor de pagamento e retorna detalhes
+        function calcularPagamento(param) {
+          const custoPneusTotal = param.numPneus * CUSTO_PNEU;
+          const custoLatariaTotal = param.numLataria * CUSTO_PECA_LATARIA;
+
+          const comissaoVendedor = PERCENTUAL_COMISSAO * param.valorVenda;
+
+          // Margem convertida: valor em percentual informado (15%) para decimal (0,15)
+          const margemDecimal = param.margemPercentual / 100.0;
+          const margemValor = margemDecimal * param.valorVenda;
+
+          // Soma de outros custos: inclui custos fixos e variáveis (pneus e peças de lataria).
+          // Não são considerados impostos, juros ou comissão aqui, pois esses são calculados separadamente.
+          // Considera valor informado para reparos diversos, se presente
+          const custoReparosDiversos = param.reparosDiversos || 0;
+          // IPVA: se pagamentoIpva for verdadeiro, calcula 3% do valor da FIPE; caso contrário, zero
+          const custoIpva = param.pagamentoIpva && param.valorFipe ? 0.03 * param.valorFipe : 0;
+          const outrosCustos =
+            custoPneusTotal +
+            custoLatariaTotal +
+            custoReparosDiversos +
+            custoIpva +
+            CUSTO_PUBLICIDADE +
+            CUSTO_HIGIENIZACAO +
+            CUSTO_POLIMENTO +
+            CUSTO_TRANSFERENCIA +
+            CUSTO_REVISAO_PATIO +
+            CUSTO_LAVAGEM +
+            CUSTO_CARTORIO +
+            CUSTO_ABRACAF;
+
+          // Fórmula considerando PIS/Confins (3,65%) sobre a diferença entre venda e compra,
+          // ICMS (0,85%) e comissão (0,5%) sobre a venda e juros de floor plan (1,5%) sobre o valor de compra
+          // Coeficiente de receita após deduzir comissão, encargos de comissão, ICMS e PIS/Confins
+          const revenueCoefficient = 1 - (PERCENTUAL_COMISSAO + PERCENTUAL_ENCARGOS_COMISSAO + ICMS_PERCENT + PIS_COFINS_PERCENT);
+          const numerador = revenueCoefficient * param.valorVenda - outrosCustos - margemValor;
+          const denominador = 1 + PERCENTUAL_JURO_FLOOR - PIS_COFINS_PERCENT;
+          let valorPagamento = numerador / denominador;
+          if (valorPagamento < 0) valorPagamento = 0;
+
+          // Cálculo de juros, impostos e lucro efetivo após conhecer o valor de compra
+          const jurosFloorPlan = PERCENTUAL_JURO_FLOOR * valorPagamento;
+          const custoIcms = ICMS_PERCENT * param.valorVenda;
+          const custoPisCofins = PIS_COFINS_PERCENT * (param.valorVenda - valorPagamento);
+          // Encargos de comissão/DSR: 0,5% sobre o valor de venda
+          const encargosComissao = PERCENTUAL_ENCARGOS_COMISSAO * param.valorVenda;
+
+          const lucroEfetivo =
+            param.valorVenda -
+            comissaoVendedor -
+            encargosComissao -
+            custoIcms -
+            custoPisCofins -
+            (valorPagamento + jurosFloorPlan + outrosCustos);
+
+          // Diferença em relação ao valor da Tabela Fipe, se fornecido
+          let diferencaFipe = null;
+          let percentualPagamentoSobreFipe = null;
+          let percentualPagamentoSobreFipePct = null;
+          if (param.valorFipe && param.valorFipe > 0) {
+            diferencaFipe = valorPagamento - param.valorFipe;
+            percentualPagamentoSobreFipe = valorPagamento / param.valorFipe;
+            percentualPagamentoSobreFipePct = percentualPagamentoSobreFipe * 100;
+          }
+
+          return {
+            valorPagamento,
+            detalhes: {
+              comissaoVendedor,
+              encargosComissao,
+              jurosFloorPlan,
+              custoPneusTotal,
+              custoLatariaTotal,
+              custoCartorio: CUSTO_CARTORIO,
+              custoAbracaf: CUSTO_ABRACAF,
+              custoPublicidade: CUSTO_PUBLICIDADE,
+              custoHigienizacao: CUSTO_HIGIENIZACAO,
+              custoPolimento: CUSTO_POLIMENTO,
+              custoTransferencia: CUSTO_TRANSFERENCIA,
+              custoRevisaoPatio: CUSTO_REVISAO_PATIO,
+              custoLavagem: CUSTO_LAVAGEM,
+              custoReparosDiversos: custoReparosDiversos,
+              custoIpva: custoIpva,
+              custoPisCofins: custoPisCofins,
+              custoIcms: custoIcms,
+              outrosCustos,
+              margemValor,
+              lucroEfetivo,
+              valorFipe: param.valorFipe || null,
+              diferencaFipe,
+              percentualPagamentoSobreFipe,
+              percentualPagamentoSobreFipePct,
+            },
+          };
+        }
+
+        // Aplicar formatação de moeda aos campos de entrada que requerem valores monetários
+        document.getElementById("valorVenda").addEventListener("blur", function () {
+          formatarInputMoeda(this);
+        });
+        document.getElementById("valorFipe").addEventListener("blur", function () {
+          formatarInputMoeda(this);
+        });
+        document.getElementById("reparosDiversos").addEventListener("blur", function () {
+          formatarInputMoeda(this);
+        });
+
+        // Limpar valor zero ao focar nos campos de moeda
+        document.getElementById("valorVenda").addEventListener("focus", limparSeZero);
+        document.getElementById("valorFipe").addEventListener("focus", limparSeZero);
+        document.getElementById("reparosDiversos").addEventListener("focus", limparSeZero);
+
+        // Evento de submissão do formulário
+        document
+          .getElementById("formAvaliacao")
+          .addEventListener("submit", function (event) {
+            event.preventDefault();
+            const valorVenda = parseMoedaTexto(
+              document.getElementById("valorVenda").value
+            );
+            const numPneus = parseInt(
+              document.getElementById("numPneus").value,
+              10
+            );
+            const numLataria = parseInt(
+              document.getElementById("numLataria").value,
+              10
+            );
+            const margemPercentual = parseFloat(
+              document.getElementById("margem").value
+            );
+
+            const valorFipe = parseMoedaTexto(
+              document.getElementById("valorFipe").value
+            );
+
+            const reparosDiversos = parseMoedaTexto(
+              document.getElementById("reparosDiversos").value
+            );
+
+            // Pagamento de IPVA: se "sim", considerar 3% da FIPE como custo. Caso contrário, considerar zero.
+            const pagarIpva = document.getElementById("pagarIpva").value;
+            const pagamentoIpva = pagarIpva === "sim";
+
+            const params = {
+              valorVenda,
+              numPneus,
+              numLataria,
+              margemPercentual,
+              valorFipe,
+              reparosDiversos,
+              pagamentoIpva,
+            };
+
+            const resultado = calcularPagamento(params);
+
+            // Preencher resultado na página
+            const resultadoDiv = document.getElementById("resultado");
+            const valorPagamentoP = document.getElementById("valorPagamento");
+            const detalhesLista = document.getElementById("detalhesLista");
+            resultadoDiv.style.display = "block";
+            // Formata o valor da KPI e aplica estilo menor aos centavos
+            const valorFormatado = formatarMoeda(resultado.valorPagamento);
+            const partesMoeda = valorFormatado.split(",");
+            if (partesMoeda.length === 2) {
+              valorPagamentoP.innerHTML = `${partesMoeda[0]},<span class="decimais">${partesMoeda[1]}</span>`;
+            } else {
+              // fallback para casos improváveis sem separador de centavos
+              valorPagamentoP.innerHTML = valorFormatado;
+            }
+
+            // Limpar e preparar o container de detalhes como contêiner flexível
+            detalhesLista.innerHTML = "";
+            detalhesLista.className = "detalhes-container";
+
+            const detalhes = resultado.detalhes;
+            // Definir grupos de custos
+            const impostos = [
+              [
+                "PIS/Confins (3,65% da diferença entre venda e compra)",
+                detalhes.custoPisCofins,
+              ],
+              ["ICMS (0,85% da venda)", detalhes.custoIcms],
+              ["Custo de IPVA (3% da Tabela Fipe)", detalhes.custoIpva],
+            ];
+            const despesasVariaveis = [
+              ["Custo total com pneus", detalhes.custoPneusTotal],
+              ["Custo total com peças de lataria", detalhes.custoLatariaTotal],
+              ["Custo de reparos diversos", detalhes.custoReparosDiversos],
+              // Colocar higienização e polimento como despesas variáveis, conforme solicitado
+              ["Custo de higienização", detalhes.custoHigienizacao],
+              ["Custo de polimento", detalhes.custoPolimento],
+            ];
+            const custosFixos = [
+              // Comissão do vendedor e encargos de comissão/DSR e juros de floor plan devem ser mostrados como custos fixos, apesar de variáveis
+              ["Comissão do vendedor (0,5% da venda)", detalhes.comissaoVendedor],
+              ["Encargos de Comissão/DSR (0,5% da venda)", detalhes.encargosComissao],
+              ["Juros de floor plan (1,5% sobre o valor de compra)", detalhes.jurosFloorPlan],
+              ["Custo de cartório", detalhes.custoCartorio],
+              ["Custo Abracaf", detalhes.custoAbracaf],
+              ["Custo de publicidade", detalhes.custoPublicidade],
+              ["Custo de transferência", detalhes.custoTransferencia],
+              ["Custo de revisão de pátio", detalhes.custoRevisaoPatio],
+              ["Custo de lavagem", detalhes.custoLavagem],
+            ];
+            const resultadosLista = [
+              ["Margem desejada", detalhes.margemValor],
+              // O lucro efetivo previsto não é exibido; a margem desejada já indica o objetivo de ganho
+            ];
+            if (detalhes.valorFipe) {
+              resultadosLista.push([
+                "Valor da Tabela Fipe",
+                detalhes.valorFipe,
+              ]);
+              resultadosLista.push([
+                "Diferença entre pagamento e Fipe",
+                detalhes.diferencaFipe,
+              ]);
+              const percentualFormatado =
+                detalhes.percentualPagamentoSobreFipePct !== null
+                  ? detalhes.percentualPagamentoSobreFipePct.toFixed(2) + "%"
+                  : "";
+              resultadosLista.push([
+                "Pagamento em relação à Fipe",
+                percentualFormatado,
+              ]);
+            }
+
+            function criarBox(titulo, lista) {
+              const box = document.createElement("div");
+              box.className = "detalhes-box";
+              const h4 = document.createElement("h4");
+              h4.textContent = titulo;
+              box.appendChild(h4);
+              const ul = document.createElement("ul");
+              lista.forEach(function ([descricao, valor]) {
+                const li = document.createElement("li");
+                let textoValor;
+                if (typeof valor === "number") {
+                  textoValor = formatarMoeda(valor);
+                } else {
+                  textoValor = valor;
+                }
+                li.textContent = `${descricao}: ${textoValor}`;
+                ul.appendChild(li);
+              });
+              box.appendChild(ul);
+              return box;
+            }
+
+            // Criar e adicionar caixas ao container
+            // Primeiro exibe os resultados da análise imediatamente abaixo do KPI
+            detalhesLista.appendChild(criarBox("Resultados da Análise", resultadosLista));
+            // Depois as demais categorias de custos
+            detalhesLista.appendChild(criarBox("Impostos", impostos));
+            detalhesLista.appendChild(criarBox("Despesas variáveis", despesasVariaveis));
+            detalhesLista.appendChild(criarBox("Custos fixos - NBS", custosFixos));
+          });
+      })();
+    </script>
+  </body>
+</html>
