@@ -114,15 +114,27 @@
       }
       .kpi-card .kpi-value {
         /* Tamanho reduzido para alinhar melhor com o título do KPI */
-        font-size: 4rem;
+        font-size: 3.5rem;
         font-weight: 700;
         /* Utilize o mesmo tom de azul escuro (marinho) usado no texto e na borda */
         color: #0045b3;
       }
 
+      /* Ajustes responsivos para visualização mobile */
+      @media (max-width: 600px) {
+        .kpi-card .kpi-value {
+          /* Reduz o tamanho da fonte em telas menores para melhor ajuste */
+          font-size: 2.8rem;
+        }
+        .kpi-card .kpi-label {
+          /* Ajuste opcional do título do KPI em telas menores */
+          font-size: 1rem;
+        }
+      }
+
     /* Estilo menor para os centavos dentro da KPI */
     .kpi-card .kpi-value .decimais {
-        font-size: 0.55em;
+        font-size: 0.5em;
     }
 
       /* Estilo para boxes de detalhes separados por setor */
@@ -533,20 +545,20 @@
             const valorPagamentoP = document.getElementById("valorPagamento");
             const detalhesLista = document.getElementById("detalhesLista");
             resultadoDiv.style.display = "block";
-            // Formata o valor da KPI e aplica estilo menor aos centavos
+            // Formata o valor da KPI com centavos; os centavos serão exibidos em fonte menor
             const valorFormatado = formatarMoeda(resultado.valorPagamento);
             const partesMoeda = valorFormatado.split(",");
             if (partesMoeda.length === 2) {
               valorPagamentoP.innerHTML = `${partesMoeda[0]},<span class="decimais">${partesMoeda[1]}</span>`;
             } else {
               // fallback para casos improváveis sem separador de centavos
-              valorPagamentoP.innerHTML = valorFormatado;
+              valorPagamentoP.textContent = valorFormatado;
             }
 
             // Ajusta dinamicamente o estilo do valor da KPI para destacar o número principal.
             // Isso garante que o tamanho e a cor sejam aplicados corretamente, mesmo diante de regras de CSS mais específicas.
             valorPagamentoP.style.color = "#0045b3";
-            valorPagamentoP.style.fontSize = "4rem";
+            valorPagamentoP.style.fontSize = "3.5rem";
             valorPagamentoP.style.fontWeight = "700";
 
             // Limpar e preparar o container de detalhes como contêiner flexível
@@ -566,7 +578,7 @@
             const despesasVariaveis = [
               ["Custo total com pneus", detalhes.custoPneusTotal],
               ["Custo total com peças de lataria", detalhes.custoLatariaTotal],
-              ["Custo de reparos diversos", detalhes.custoReparosDiversos],
+              ["Prévia de Manutenção", detalhes.custoReparosDiversos],
               // Colocar higienização e polimento como despesas variáveis, conforme solicitado
               ["Custo de higienização", detalhes.custoHigienizacao],
               ["Custo de polimento", detalhes.custoPolimento],
